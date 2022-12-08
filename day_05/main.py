@@ -14,6 +14,20 @@ def part1(stacks, move_commands):
     print(top_crates)
 
 
+def part2(stacks, move_commands):
+    for c in move_commands:
+        count, from_crate, to_crate = c
+        count = int(count)
+        stacks[to_crate].extend(stacks[from_crate][-count:])
+        stacks[from_crate] = stacks[from_crate][:-count]
+
+    top_crates = ""
+    for c, s in stacks.items():
+        top_crates += s[-1]
+
+    print(top_crates)
+
+
 if __name__ == "__main__":
     stack_info = [] # {crate label: stack}
 
@@ -44,4 +58,5 @@ if __name__ == "__main__":
                 stacks[crate_label].append(crate.strip())
             crate_label_index += 1
 
-    part1(stacks, move_commands)
+    # part1(stacks, move_commands)
+    part2(stacks, move_commands)
