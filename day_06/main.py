@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-def part1(buffer):
-    for i in range(0, len(buffer) - 3):
-        substr = buffer[i:i+4]
-        if len(substr) < 4:
+def find_marker(buffer, num_unique_chars):
+    for i in range(0, len(buffer) - (num_unique_chars - 1)):
+        substr = buffer[i:i+num_unique_chars]
+        if len(substr) < num_unique_chars:
             continue
-        if len(set(substr)) == 4:
-            return i + 4
+        if len(set(substr)) == num_unique_chars:
+            return i + num_unique_chars
 
 
 if __name__ == "__main__":
@@ -15,5 +15,6 @@ if __name__ == "__main__":
         for line in f:
             buffer += line.strip()
 
-    print(part1(buffer))
+    print(f"Part 1: {find_marker(buffer, 4)}")
+    print(f"Part 2: {find_marker(buffer, 14)}")
     
