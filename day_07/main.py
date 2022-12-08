@@ -20,7 +20,7 @@ class Directory(object):
 
     def __str__(self):
         indentation = "  " * self.indentation_level
-        result = f"{indentation}{self.name} (dir)\n"
+        result = f"{indentation}{self.name} (dir, size={self.size()})\n"
         for dir in self.subdirs:
             result += str(dir)
         for f in self.files:
@@ -53,18 +53,35 @@ if __name__ == "__main__":
                 else:
                     curr_dir.files.append((name, int(specifier)))
 
-    # part 1
-    total = 0
+    dir_sizes = {}
     to_check = [root_dir]
     while len(to_check) > 0:
         check = to_check.pop(0)
 
         if isinstance(check, Directory):
-            size = check.size()
-            if size <= 100000:
-                total += size
+            dir_sizes[check] = check.size()
             for d in check.subdirs:
                 to_check.append(d)
 
-    # print(root_dir)
-    print(f"Part 1: {total}")
+    print(root_dir)
+
+    # part 1
+    print(f"Part 1: {sum([size for d, size in dir_sizes.items() if size <= 100000])}")
+
+    # part 2
+    space_needed = 30000000 - (70000000 - root_dir.size())
+    print(f"Space needed: {space_needed}")
+    candidates = []
+    for d, size in dir_sizes.items():
+        if size >= space_needed: 
+            print(f"{d.name} - {size}")
+            candidates.append(d)
+
+    minimum = candidates[0]
+    for c in candidates:
+        if c.size() <= minimum.size():
+            minimum = c
+
+    print(f"Part 2: {minimum.name}")
+    
+    # print(f"Part 2: {min({d:size for d, size in dir_sizes.items() if size >= space_needed}, key=lambda d: dir_sizes[d]).name}")
