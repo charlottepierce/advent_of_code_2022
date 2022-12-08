@@ -27,3 +27,16 @@ if __name__ == "__main__":
             count += 1 # range 1 is contained in range 2
     
     print("Part 1:", count)
+
+    # part 2
+    count = 0
+    for range1, range2 in assignment_pairs:
+        if (
+            (range1[1] >= range2[0] >= range1[0]) or # start of range 2 is somewhere within range 1
+            (range1[1] >= range2[1] >= range1[0]) or # end of range 2 is somewhere within range 1
+            (range2[1] >= range1[0] >= range2[0]) or # start of range 1 is somewhere within range 2
+            (range2[1] >= range1[1] >= range2[0]) # end of range 1 is somewhere within range 2
+        ):
+            count += 1
+
+    print("Part 2:", count)
