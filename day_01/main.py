@@ -10,6 +10,11 @@ if __name__ == "__main__":
                 calorie_count = 0
             else:
                 calorie_count += int(line.strip())
+        calories_per_elf.append(calorie_count)
 
     # part 1: max calories held by one elf
     print("Part 1:", max(calories_per_elf))
+
+    # part 2: sum of the top 3
+    calories_per_elf.sort()
+    print("Part 2:", sum(calories_per_elf[-3:]))
