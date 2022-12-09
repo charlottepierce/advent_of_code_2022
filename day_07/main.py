@@ -69,19 +69,5 @@ if __name__ == "__main__":
     print(f"Part 1: {sum([size for d, size in dir_sizes.items() if size <= 100000])}")
 
     # part 2
-    space_needed = 30000000 - (70000000 - root_dir.size())
-    print(f"Space needed: {space_needed}")
-    candidates = []
-    for d, size in dir_sizes.items():
-        if size >= space_needed: 
-            print(f"{d.name} - {size}")
-            candidates.append(d)
-
-    minimum = candidates[0]
-    for c in candidates:
-        if c.size() <= minimum.size():
-            minimum = c
-
-    print(f"Part 2: {minimum.name}")
-    
-    # print(f"Part 2: {min({d:size for d, size in dir_sizes.items() if size >= space_needed}, key=lambda d: dir_sizes[d]).name}")
+    space_needed = 30000000 - (70000000 - root_dir.size())    
+    print(f"Part 2: {min({d:size for d, size in dir_sizes.items() if size >= space_needed}, key=lambda d: dir_sizes[d]).size()}")
