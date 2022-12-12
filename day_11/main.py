@@ -9,7 +9,7 @@ class Monkey(object):
         self.items = []
         self.operator = None
         self.operation_amount = None # can be a number, or "old"
-        self.test_operator = None # pt 1 -- always "divisible"
+        self.test_operator = None # always "divisible"
         self.test_amount = None
         self.throw_if_true = None
         self.throw_if_false = None
@@ -27,7 +27,7 @@ class Monkey(object):
         return item % self.test_amount == 0
 
 
-    def take_turn(self, other_monkeys):
+    def take_turn(self, other_monkeys, worry_mod=None):
         # print(f"Monkey {self.number}")
         while len(self.items) > 0:
             self.inspection_count += 1
@@ -35,10 +35,12 @@ class Monkey(object):
             # print(f"Monkey inspects an item with a worry level of {item}.")
             item, operation_descriptor, amount = self._apply_operator(item)
             # print(f"Worry level {operation_descriptor} by {amount} to {item}.")
-            item = math.floor(item / 3)
+            # item = math.floor(item / 3) # only for part 1
+            if worry_mod:
+                item %= worry_mod
             # print(f"Monkey gets bored with item. Worry level is divided by 3 to {item}.")
             passes_test = self._run_test(item)
-            msg = "is" if passes_test else "is not"
+            # msg = "is" if passes_test else "is not"
             # print(f"Current worry level {msg} divisible by {self.test_amount}.")
             pass_to = self.throw_if_true if passes_test else self.throw_if_false
             other_monkeys[pass_to].items.append(item)
@@ -81,11 +83,23 @@ if __name__ == "__main__":
             number = int(next_line.strip().split(" ")[1].replace(":", ""))
             monkeys[number] = read_monkey(lines, number)
 
-    for round in range(20):
+    # part 1
+    # for round in range(20):
+    #     for i in range(len(monkeys)):
+    #         monkeys[i].take_turn(monkeys)
+
+    # inspection_counts = [m.inspection_count for m in monkeys.values()]
+    # inspection_counts.sort()
+    # product_of_two_busiest = reduce(lambda x, y: x * y, inspection_counts[-2:])
+    # print(f"Part 1: {product_of_two_busiest}")
+
+    # part 2
+    worry_mod = reduce(lambda a, b: a * b, [monkeys[k].test_amount for k in monkeys.keys()])
+    for round in range(10000):
         for i in range(len(monkeys)):
-            monkeys[i].take_turn(monkeys)
+            monkeys[i].take_turn(monkeys, worry_mod=worry_mod)
 
     inspection_counts = [m.inspection_count for m in monkeys.values()]
     inspection_counts.sort()
-    sum_of_two_busiest = reduce(lambda x, y: x * y, inspection_counts[-2:])
-    print(f"Part 1: {sum_of_two_busiest}")
+    product_of_two_busiest = reduce(lambda x, y: x * y, inspection_counts[-2:])
+    print(f"Part 2: {product_of_two_busiest}")
