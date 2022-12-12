@@ -32,8 +32,7 @@ def part1(elevation_grid):
     end = find_pos_of_char_in_grid(elevation_grid, "E")
 
     queue = [(start, 0)]
-    visited = []
-    visited.append(start)
+    visited = [start]
 
     best = None
 
@@ -56,6 +55,33 @@ def part1(elevation_grid):
     return best
 
 
+def part2(elevation_grid):
+    start = find_pos_of_char_in_grid(elevation_grid, "E")
+
+    queue = [(start, 0)]
+    visited = [start]
+    distance_to_as = {}
+
+    while len(queue) > 0:
+        curr, score = queue.pop(0)
+
+        if elevation_grid[curr[0]][curr[1]] in "Sa":
+            distance_to_as[curr] = score
+        
+        for neighbour in get_neighbours(curr, elevation_grid):
+            height_at_curr = elevation_grid[curr[0]][curr[1]]
+            height_at_neighbour = elevation_grid[neighbour[0]][neighbour[1]]
+            if height_at_curr == "S": height_at_curr = "a"
+            if height_at_curr == "E": height_at_curr = "z"
+            if height_at_neighbour == "S": height_at_neighbour = "a"
+            if height_at_neighbour == "E": height_at_neighbour = "z"
+            if (ord(height_at_neighbour) + 1 >= ord(height_at_curr)) and (neighbour not in visited):
+                queue.append((neighbour, score + 1))
+                visited.append(neighbour)
+
+    return distance_to_as[min(distance_to_as.keys(), key=lambda p: distance_to_as[p])]
+
+
 if __name__ == "__main__":
     elevation_grid = []
     with open("input.txt", 'r') as f:
@@ -63,3 +89,4 @@ if __name__ == "__main__":
             elevation_grid.append([c for c in line.strip()])
 
     print(f"Part 1: {part1(elevation_grid)}")
+    print(f"Part 2: {part2(elevation_grid)}")
