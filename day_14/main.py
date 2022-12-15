@@ -38,10 +38,52 @@ def part1(cavern):
                 cavern[sand_y][sand_x] = "o"
                 # print(f"Sand number {sand_count} has come to rest")
         
-        # for row in cavern:
-        #     print("".join(row[490:]))
-
     return sand_count
+
+
+def part2(cavern):
+    # extend cavern height 2 rows
+    cavern.append(['.' for col in range(len(cavern[0]))])
+    cavern.append(['#' for col in range(len(cavern[0]))])
+
+    last_resting_point = None
+    resting_grains = 0
+    while (last_resting_point != (500, 0)):
+        sand_x = 500
+        sand_y = 0
+        at_rest = False
+        while not at_rest:
+            # A unit of sand always falls down one step if possible.
+            if cavern[sand_y + 1][sand_x] == ".":
+                sand_y += 1
+                continue
+            # Check if down-left exists, if not, create a new column of air, remember to add floor at the bottom
+            if (sand_x - 1) < 0:
+                for row in cavern:
+                    row.insert(0, ".")
+                cavern[-1][0] = "#"
+            # If the tile immediately below is blocked (by rock or sand), the unit of sand attempts to instead move diagonally one step down and to the left.
+            if cavern[sand_y + 1][sand_x - 1] == ".":
+                sand_y += 1
+                sand_x -= 1
+                continue
+            # Check if down-right exists, if not, create a new column of air, remember to add floor at the bottom
+            if (sand_x + 1) >= len(cavern[0]):
+                for row in cavern:
+                    row.append(".")
+                cavern[-1][-1] = "#"
+            # If down-left is blocked, the unit of sand attempts to instead move diagonally one step down and to the right.
+            if cavern[sand_y + 1][sand_x + 1] == ".":
+                sand_y += 1
+                sand_x += 1
+                continue
+            # not falling off the map, and can't move down, down-left, or down-right -- must be at rest
+            at_rest = True
+            resting_grains += 1
+            last_resting_point = (sand_x, sand_y)
+            cavern[sand_y][sand_x] = "o"
+
+    return resting_grains
 
 
 if __name__ == "__main__":
@@ -73,4 +115,5 @@ if __name__ == "__main__":
                 for y in range(y1, y2 + dy, dy):
                     cavern[y][x] = "#"
 
-    print(f"Part 1: {part1(cavern)}")
+    print(f"Part 1: {part1([row[:] for row in cavern])}")
+    print(f"Part 2: {part2([row[:] for row in cavern])}")
