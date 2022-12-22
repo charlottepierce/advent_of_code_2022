@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+import functools
+
+valve_info = {}
+
 class Valve(object):
     def __init__(self, name, flow_rate, tunnels):
         self.name = name
@@ -19,7 +23,8 @@ class Valve(object):
         return desc
 
 
-def shortest_path(valve_info, start_valve, end_valve):
+@functools.cache
+def shortest_path(start_valve, end_valve):
     queue = [[start_valve, 0]] # node, distance of path
     seen = [start_valve]
 
@@ -40,7 +45,7 @@ def shortest_path(valve_info, start_valve, end_valve):
     return best
 
 
-def part1(valve_info):
+def part1():
     time_limit = 30
     start_valve = "AA"
     maximum_pressure_released = 0
@@ -51,11 +56,11 @@ def part1(valve_info):
     queue.append([[start_valve], {}, 0]) # list path of valves, dict of valve name : minute it was opened, minutes passed
 
     while len(queue) > 0:
-        path, open_valves, minutes_passed = queue.pop(0)
+        path, open_valves, minutes_passed = queue.pop()
         # print(f"Queue length = {len(queue)}; at minute {minutes_passed} with {len(open_valves)} open valves of {len(valves_with_flow)}")
 
         if (minutes_passed >= time_limit) or (len(open_valves.keys()) == len(valves_with_flow)):
-            print(f"Found one possibility at minute {minutes_passed}; queue still {len(queue)} long")
+            # print(f"Found one possibility at minute {minutes_passed} with path {path}; queue still {len(queue)} long")
             # calculate pressure released on this path
             pressure_released = 0
             for valve, time_opened in open_valves.items():
@@ -71,7 +76,7 @@ def part1(valve_info):
             for v in valves_with_flow:
                 if v not in open_valves.keys():
                     # valve isn't already opened in this path, so try to get to it
-                    travel_time = shortest_path(valve_info, curr_valve, v)
+                    travel_time = shortest_path(curr_valve, v)
                     opening_time = 1
 
                     new_minutes_passed = minutes_passed + travel_time + opening_time
@@ -88,7 +93,6 @@ def part1(valve_info):
 
 
 if __name__ == "__main__":
-    valve_info = {} # name: Valve
     with open("input.txt", 'r') as f:
         for line in f:
             init_info, tunnel_info = line.strip().split(";")
@@ -99,4 +103,4 @@ if __name__ == "__main__":
             
             valve_info[name] = Valve(name, flow_rate, tunnels)
 
-    print(f"Part 1: {part1(valve_info)}")
+    print(f"Part 1: {part1()}")
