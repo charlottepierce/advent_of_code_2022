@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import functools
+import itertools
 
 valve_info = {}
 
@@ -45,12 +46,10 @@ def shortest_path(start_valve, end_valve):
     return best
 
 
-def part1():
-    time_limit = 30
+@functools.cache
+def maximum_pressure(time_limit, valves_with_flow):
     start_valve = "AA"
-    maximum_pressure_released = 0
-
-    valves_with_flow = [v.name for v in valve_info.values() if v.flow_rate > 0]
+    maximum_pressure_released = 0    
 
     queue = []
     queue.append([[start_valve], {}, 0]) # list path of valves, dict of valve name : minute it was opened, minutes passed
@@ -92,6 +91,36 @@ def part1():
     return maximum_pressure_released
 
 
+def part1():
+    valves_with_flow = [v.name for v in valve_info.values() if v.flow_rate > 0]
+    time_limit = 30
+
+    return maximum_pressure(time_limit, valves_with_flow)
+
+
+def part2():
+    time_limit = 26
+    all_openable_valves = [v for v in valve_info.keys() if valve_info[v].flow_rate > 0]
+
+    all_valve_subsets = []
+    for l in range(len(all_openable_valves)):
+        for subset in itertools.combinations(all_openable_valves, l + 1):
+            all_valve_subsets.append(tuple(subset))
+
+    maximum_pressure_released = 0
+    for my_valves in all_valve_subsets:
+        elephant_valves = tuple([v for v in all_openable_valves if v not in my_valves])
+
+        print(f"Valves {my_valves} vs {elephant_valves}")
+
+        pressure = maximum_pressure(time_limit, my_valves)
+        pressure += maximum_pressure(time_limit, elephant_valves)
+
+        maximum_pressure_released = max(maximum_pressure_released, pressure)
+
+    return maximum_pressure_released
+
+
 if __name__ == "__main__":
     with open("input.txt", 'r') as f:
         for line in f:
@@ -104,3 +133,4 @@ if __name__ == "__main__":
             valve_info[name] = Valve(name, flow_rate, tunnels)
 
     print(f"Part 1: {part1()}")
+    print(f"Part 1: {part2()}")
